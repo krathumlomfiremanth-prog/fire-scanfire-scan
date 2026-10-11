@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ระบบตรวจสอบถังดับเพลิง เทศบาลเมืองกระทุ่มล้ม</title>
+    <!-- ดึงระบบคำสั่งของ LINE LIFF มาใช้งาน -->
+    <script src="https://line-scdn.net"></script>
+</head>
+<body>
+    <p style="text-align: center; font-size: 18px; margin-top: 50px;">กำลังเปิดกล้องถ่ายรูปเพื่อสแกนถังดับเพลิง...</p>
+
+    <script>
+        // โค้ดข้อ 3 ที่ใช้เปิดกล้องระบบมือถือ
+        // ทำการกรอกรหัส LIFF ID ของคุณลงในเครื่องหมายคำพูดด้านล่างนี้
+        liff.init({ liffId: "เอาเลข_LIFF_ID_ของคุณมาวางตรงนี้" }).then(() => {
+            if (liff.isLoggedIn()) {
+                liff.scanCodeV2().then(result => {
+                    if (result.value) {
+                        const qrResult = result.value; 
+                        
+                        // ระบบจะนำค่าที่สแกนได้ ส่งเข้าไปกรอกใน Google Form ของเทศบาลอัตโนมัติ
+                        // อย่าลืมแก้ไขลิงก์และเลข entry.xxxx ให้เป็นฟิลด์ของคุณใน Google Form
+                        const googleFormUrl = `https://google.com{encodeURIComponent(qrResult)}`;
+                        
+                        window.location.href = googleFormUrl;
+                    }
+                }).catch(err => { alert("กล้องไม่ทำงาน: " + err); });
+            } else {
+                liff.login();
+            }
+        });
+    </script>
+</body>
+</html>
