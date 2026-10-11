@@ -21,15 +21,19 @@
                 liff.login();
             } else {
                 // บังคับเปิดระบบเลนส์กล้องแท้ของสมาร์ทโฟนขึ้นมาทำงานทันที
-                liff.scanCodeV2().then(result => {
-                    if (result.value) {
-                        var qrResult = result.value; // ดึงรหัสถังดับเพลิงประจำถังที่สแกนเจอ
-                        
-                        // ปรับมาใช้เครื่องหมายคำพูดมาตรฐานสากล ป้องกันโทรศัพท์บางรุ่นอ่านค่าเพี้ยน
-                        var googleFormUrl = "https://google.com" + encodeURIComponent(qrResult);
-                        
-                        // นำทางประชาชนพุ่งเข้าสู่หน้าฟอร์มที่กรอกเลขถังให้เรียบร้อยแล้วทันที
-                        window.location.href = googleFormUrl;
+               liff.scanCodeV2().then(result => {
+    if (result.value) {
+        var qrResult = result.value; 
+        
+        // 🚨 บรรทัดพิเศษ: บังคับให้ระบบโชว์ป๊อปอัปบอกบนมือถือเลยว่ากล้องสแกนเจอค่าอะไร
+        alert("กล้องอ่านค่าได้คำว่า: " + qrResult);
+        
+        var googleFormUrl = "https://google.com" + encodeURIComponent(qrResult);
+        
+        window.location.href = googleFormUrl;
+    }
+})
+
                     }
                 }).catch(err => { 
                     alert("แอป LINE ปฏิเสธการเข้าถึงกล้อง โค้ดข้อผิดพลาด: " + err); 
