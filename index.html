@@ -19,10 +19,10 @@
     
     <div class="container">
         <p id="status-text" style="font-size: 18px; color: #333; font-weight: bold; margin-bottom: 10px;">กำลังเรียกเปิดกล้องถ่ายรูป...</p>
-        <p id="sub-text" style="font-size: 14px; color: #666;">กรุณารอสักครู่ ระบบกำลังปลุกกล้องถ่ายรูปเพื่อสแกน QR Code</p>
+        <p id="sub-text" style="font-size: 14px; color: #666;">กรุณารอสักครู่ ระบบกำลังปลุกกล้องถ่ายรูปเพื่อสแกน QR Code ข้างถังดับเพลิง</p>
         
-        <!-- แก้ไขลิงก์ปุ่มสำรองให้ตรงตาม Google Forms ของแท้ล่าสุดของคุณ -->
-        <a id="backup-btn" class="btn" href="https://google.com">คลิกที่นี่ เพื่อกรอกข้อมูลฟอร์มโดยตรง</a>
+        <!-- ปุ่มสำรองวิ่งเข้า Google Forms ปลายทางหน้าแรก -->
+        <a id="backup-btn" class="btn" href="https://google.com">คลิกที่นี่ เพื่อเข้าฟอร์มตรวจสอบโดยตรง</a>
     </div>
 
     <script>
@@ -42,12 +42,10 @@
                 // สั่งเปิดระบบเลนส์กล้องแท้ของสมาร์ทโฟน
                 liff.scanCodeV2().then(result => {
                     if (result.value) {
-                        var qrResult = result.value; // ดึงรหัสถังดับเพลิงประจำถังที่สแกนเจอ
+                        var qrResult = result.value; // จะได้ลิงก์ตัวเต็มจาก QR Code เช่น https://google.com
                         
-                        // 🛠️ แก้ไขพิกัดลิงก์ Google Forms แท้ของคุณให้ถูกต้องตรงตามหน้าจอเรียบร้อยครับ
-                        var googleFormUrl = "https://google.com?usp=pp_url&entry.436950178=" + encodeURIComponent(qrResult);
-                        
-                        window.location.href = googleFormUrl;
+                        // 🛠️ ปรับแก้พิเศษ: สั่งให้เบราว์เซอร์วิ่งเข้าสู่ลิงก์ตรงจาก QR Code ชิ้นนั้นทันทีโดยไม่พ่วงโค้ดซ้ำซ้อน
+                        window.location.href = qrResult;
                     }
                 }).catch(err => {
                     document.getElementById("status-text").innerText = "แอป LINE ปฏิเสธการเข้าถึงกล้อง";
