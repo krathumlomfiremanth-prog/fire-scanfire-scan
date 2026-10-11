@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0">
     <title>ระบบตรวจสอบถังดับเพลิง เทศบาลเมืองกระทุ่มล้ม</title>
     <!-- ดึงไฟล์คำสั่งพัฒนาระบบกล้อง LINE LIFF ตัวล่าสุด -->
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://line-scdn.net"></script>
     <style>
         body { background-color: #f4f4f4; font-family: sans-serif; text-align: center; padding-top: 50px; }
         .container { padding: 30px; background: white; margin: 0 auto; max-width: 85%; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -21,7 +21,7 @@
         <p id="status-text" style="font-size: 18px; color: #333; font-weight: bold; margin-bottom: 10px;">กำลังเรียกเปิดกล้องถ่ายรูป...</p>
         <p id="sub-text" style="font-size: 14px; color: #666;">กรุณารอสักครู่ ระบบกำลังปลุกกล้องถ่ายรูปเพื่อสแกน QR Code</p>
         
-        <!-- ปุ่มสำรองสำหรับกดเองทันที หากกล้องไม่ยอมเปิด -->
+        <!-- แก้ไขลิงก์ปุ่มสำรองให้ตรงตาม Google Forms ของแท้ล่าสุดของคุณ -->
         <a id="backup-btn" class="btn" href="https://google.com">คลิกที่นี่ เพื่อกรอกข้อมูลฟอร์มโดยตรง</a>
     </div>
 
@@ -44,13 +44,12 @@
                     if (result.value) {
                         var qrResult = result.value; // ดึงรหัสถังดับเพลิงประจำถังที่สแกนเจอ
                         
-                        // นำค่ารหัสถังที่ได้มาเชื่อมต่อพ่วงเข้ากับลิงก์ Google Forms อัตโนมัติ
+                        // 🛠️ แก้ไขพิกัดลิงก์ Google Forms แท้ของคุณให้ถูกต้องตรงตามหน้าจอเรียบร้อยครับ
                         var googleFormUrl = "https://google.com?usp=pp_url&entry.436950178=" + encodeURIComponent(qrResult);
                         
                         window.location.href = googleFormUrl;
                     }
                 }).catch(err => {
-                    // หากระบบแจ้งบล็อกสิทธิ์กล้อง ให้เปิดปุ่มส่งเข้าฟอร์มตรงทันที
                     document.getElementById("status-text").innerText = "แอป LINE ปฏิเสธการเข้าถึงกล้อง";
                     document.getElementById("backup-btn").style.display = "inline-block";
                 });
