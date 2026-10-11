@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบตรวจสอบถังดับเพลิง เทศบาลเมืองกระทุ่มล้ม</title>
     <!-- ดึงระบบคำสั่งพัฒนาของ LINE LIFF ตัวเต็มที่ถูกต้อง -->
-    <script src="https://line-scdn.net"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body style="background-color: #f4f4f4; font-family: sans-serif; text-align: center; padding-top: 50px;">
     
@@ -23,20 +23,20 @@
                 // บังคับเปิดระบบเลนส์กล้องแท้ของสมาร์ทโฟนขึ้นมาทำงานทันที
                 liff.scanCodeV2().then(result => {
                     if (result.value) {
-                        const qrResult = result.value; // ดึงรหัสถังดับเพลิงประจำถังที่สแกนเจอ
+                        var qrResult = result.value; // ดึงรหัสถังดับเพลิงประจำถังที่สแกนเจอ
                         
-                        // กู้คืนลิงก์ Google Forms ตัวเต็มของเทศบาล พร้อมผูกช่อง entry.436950178 ให้กรอกเลขถังอัตโนมัติ
-                        const googleFormUrl = `https://google.com{encodeURIComponent(qrResult)}`;
+                        // ปรับมาใช้เครื่องหมายคำพูดมาตรฐานสากล ป้องกันโทรศัพท์บางรุ่นอ่านค่าเพี้ยน
+                        var googleFormUrl = "https://google.com" + encodeURIComponent(qrResult);
                         
                         // นำทางประชาชนพุ่งเข้าสู่หน้าฟอร์มที่กรอกเลขถังให้เรียบร้อยแล้วทันที
                         window.location.href = googleFormUrl;
                     }
                 }).catch(err => { 
-                    alert("แอป LINE ปฏิเสธการเข้าถึงกล้อง หรือคุณยังไม่ได้กดอนุญาตให้ LINE เข้าถึงกล้องถ่ายรูปของเครื่อง โค้ดข้อผิดพลาด: " + err); 
+                    alert("แอป LINE ปฏิเสธการเข้าถึงกล้อง โค้ดข้อผิดพลาด: " + err); 
                 });
             }
         }).catch(err => { 
-            alert("ระบบเชื่อมต่อกับ LINE Developers ไม่สำเร็จ กรุณาเช็กความถูกต้องของรหัส LIFF ID โค้ดข้อผิดพลาด: " + err); 
+            alert("ระบบเชื่อมต่อไม่สำเร็จ กรุณาเช็กความถูกต้องของรหัส LIFF ID โค้ดข้อผิดพลาด: " + err); 
         });
     </script>
 </body>
