@@ -2,30 +2,41 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบตรวจสอบถังดับเพลิง เทศบาลเมืองกระทุ่มล้ม</title>
-    <!-- ดึงระบบคำสั่งของ LINE LIFF มาใช้งาน -->
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <!-- ดึงระบบคำสั่งพัฒนาของ LINE LIFF มาใช้งาน -->
+    <script src="https://line-scdn.net"></script>
 </head>
-<body>
-    <p style="text-align: center; font-size: 18px; margin-top: 50px;">กำลังเปิดกล้องถ่ายรูปเพื่อสแกนถังดับเพลิง...</p>
+<body style="background-color: #f4f4f4; font-family: sans-serif; text-align: center; padding-top: 50px;">
+    
+    <div style="padding: 20px; background: white; margin: 0 auto; max-width: 80%; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <p style="font-size: 18px; color: #333; font-weight: bold; margin-bottom: 10px;">กำลังเรียกเปิดกล้องถ่ายรูป...</p>
+        <p style="font-size: 14px; color: #666;">กรุณากดยอมรับสิทธิ์การเข้าถึงกล้องหากระบบร้องขอ เพื่อสแกนคิวอาร์โค้ดข้างถังดับเพลิง</p>
+    </div>
 
     <script>
-        // บังคับปลุกระบบกล้องหลักของโทรศัพท์ขึ้นมาทำงานทันที
+        // เริ่มต้นระบบด้วย LIFF ID ของเทศบาลเมืองกระทุ่มล้ม
         liff.init({ liffId: "2011967473-uNg8ywfT" }).then(() => {
-            if (liff.isLoggedIn()) {
+            if (!liff.isLoggedIn()) {
+                liff.login();
+            } else {
+                // บังคับเปิดระบบเลนส์กล้องแท้ของสมาร์ทโฟนขึ้นมาทำงานทันที
                 liff.scanCodeV2().then(result => {
                     if (result.value) {
-                        const qrResult = result.value; // รหัสถังดับเพลิงที่สแกนได้จากข้างถัง
+                        const qrResult = result.value; // ดึงรหัสถังดับเพลิงประจำถังที่สแกนเจอ
                         
-                        // ⚠️ ลบลิงก์ตัวอย่างด้านล่างออก แล้วเอาลิงก์ Google Forms ตัวเต็มของเทศบาลมาวางใส่แทนครับ
-                        const googleFormUrl = "https://docs.google.com/forms/d/1JzZ334bqOCxjDs_npDMyK2RIXqpFBmGZRFA147MHTQU/edit";
+                        // ระบบทำการต่อพ่วงรหัสถังเข้ากับ ID ฟิลด์ของ Google Form (entry.436950178) โดยอัตโนมัติ
+                        const googleFormUrl = `https://google.com{encodeURIComponent(qrResult)}`;
                         
+                        // นำทางประชาชนพุ่งเข้าสู่หน้าฟอร์มที่กรอกเลขถังให้เรียบร้อยแล้วทันที
                         window.location.href = googleFormUrl;
                     }
-                }).catch(err => { alert("กล้องไม่ทำงาน: " + err); });
-            } else {
-                liff.login();
+                }).catch(err => { 
+                    alert("แอป LINE ปฏิเสธการเข้าถึงกล้อง หรือคุณยังไม่ได้กดอนุญาตให้ LINE เข้าถึงกล้องถ่ายรูปของเครื่อง โค้ดข้อผิดพลาด: " + err); 
+                });
             }
+        }).catch(err => { 
+            alert("ระบบเชื่อมต่อกับ LINE Developers ไม่สำเร็จ กรุณาเช็กความถูกต้องของรหัส LIFF ID โค้ดข้อผิดพลาด: " + err); 
         });
     </script>
 </body>
