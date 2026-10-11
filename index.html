@@ -7,9 +7,8 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>ระบบตรวจสอบถังดับเพลิง เทศบาลเมืองกระทุ่มล้ม</title>
-    <!-- เรียกใช้ระบบคำสั่ง LINE LIFF และโมดูลถอดรหัสกล้องความละเอียดสูง -->
+    <!-- เรียกใช้ระบบคำสั่ง LINE LIFF สำหรับฟังก์ชันสแกนวิดีโอสด -->
     <script src="https://line-scdn.net"></script>
-    <script src="https://unpkg.com"></script>
     <style>
         body { background-color: #f4f4f4; font-family: sans-serif; text-align: center; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
         .container { padding: 30px; background: white; width: 85%; max-width: 400px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); box-sizing: border-box; }
@@ -17,7 +16,6 @@
         .title { font-size: 20px; color: #d9534f; font-weight: bold; margin: 10px 0; }
         .desc { font-size: 14px; color: #555; line-height: 1.5; margin-bottom: 25px; }
         .scan-btn { display: inline-block; width: 100%; padding: 15px 0; background-color: #e53935; color: white; border: none; border-radius: 30px; font-size: 18px; font-weight: bold; text-decoration: none; box-shadow: 0 4px 8px rgba(229,57,53,0.3); cursor: pointer; }
-        #qr-input { display: none; }
     </style>
 </head>
 <body>
@@ -25,45 +23,35 @@
     <div class="container">
         <div class="logo">🚒</div>
         <div class="title">เทศบาลเมืองกระทุ่มล้ม</div>
-        <div class="desc">ระบบตรวจสอบสถานะถังดับเพลิงประจำชุมชน<br>กรุณากดปุ่มด้านล่างเพื่อเปิดกล้องมือถือสแกนคิวอาร์โค้ดที่ข้างถังดับเพลิงค่ะ</div>
-        
-        <!-- ปรับแต่งส่วนรับภาพให้ดึงความละเอียดสูงสุดจากเลนส์กล้องหลังของเครื่อง (environment) -->
-        <input type="file" id="qr-input" accept="image/*" capture="environment">
-        
-        <button class="scan-btn" onclick="openCamera()">📷 กดตรงนี้ เพื่อเปิดกล้องสแกน</button>
+        <div class="desc">ระบบตรวจสอบสถานะถังดับเพลิงประจำชุมชน<br>กรุณากดปุ่มด้านล่างเพื่อเปิดกล้องความไวสูงสแกนคิวอาร์โค้ดที่ข้างถังดับเพลิงค่ะ</div>
+        <button class="scan-btn" onclick="startScan()">📷 เปิดกล้องสแกนทันที</button>
     </div>
 
     <script>
-        // เริ่มต้นตรวจสอบสิทธิ์ LINE LIFF
+        // เริ่มต้นตรวจสอบสิทธิ์ความปลอดภัยในแอป LINE 
         liff.init({ liffId: "2011967473-uNg8ywfT" }).then(() => {
-            if (!liff.isLoggedIn()) { liff.login(); }
-        }).catch(err => { console.error(err); });
+            if (!liff.isLoggedIn()) { 
+                liff.login(); 
+            } else {
+                // ปลุกฟังก์ชันสแกนอัตโนมัติทำงานล่วงหน้าเพื่อความฉับไว
+                startScan();
+            }
+        }).catch(err => { alert("ระบบขัดข้อง: " + err); });
 
-        function openCamera() {
-            document.getElementById('qr-input').click();
+        // ฟังก์ชันยิงตรงเข้าเลนส์ตรวจจับข้อมูลความไวสูงแบบ Real-Time ของ LINE
+        function startScan() {
+            liff.scanCodeV2().then(result => {
+                if (result.value) {
+                    var qrResult = result.value; // จะแกะดึงค่าลิงก์ Google Forms ตัวเต็มออกมาอย่างคมชัด
+                    
+                    // สั่งกระโดดเปลี่ยนหน้าจอพาวิ่งเข้าลิงก์ Google Forms ตัวเต็มชิ้นนั้นโดยตรงทันที
+                    window.location.href = qrResult;
+                }
+            }).catch(err => {
+                // กรณีมือถือรุ่นเก่ามากจนไม่ยอมรันหน้าสแกนสด ให้พาวิ่งเข้าหน้ารวม Google Forms สำรองทันทีเพื่อป้องกันค้าง
+                window.location.href = "https://google.com";
+            });
         }
-
-        document.getElementById('qr-input').addEventListener('change', function(e) {
-            if (e.target.files.length === 0) return;
-            
-            var file = e.target.files[0];
-            
-            // ใช้เครื่องมือแกะลายคิวอาร์โค้ดผ่านโมดูลที่มีความเสถียร
-            Html5Qrcode.scanImage(file, { experimental: { useBarCodeDetectorIfSupported: true } })
-                .then(qrCodeMessage => {
-                    // หากแกะพบว่าใน QR Code เป็นลิงก์ Google Forms แยกถังอยู่แล้ว ให้พุ่งเข้าเว็บฟอร์มทันที
-                    if (qrCodeMessage.startsWith("http://") || qrCodeMessage.startsWith("https://")) {
-                        window.location.href = qrCodeMessage;
-                    } else {
-                        // หากเป็นรหัสข้อความสั้น ให้ระบบนำรหัสถังไปป้อนข้อมูลในฟอร์มของเทศบาลเมืองกระทุ่มล้มอัตโนมัติ
-                        window.location.href = "https://google.com" + encodeURIComponent(qrCodeMessage);
-                    }
-                })
-                .catch(err => {
-                    // แจ้งเตือนข้อแนะนำที่เป็นประโยชน์หากภาพสแกนไม่ชัดเจน
-                    alert("สแกนไม่สำเร็จ: เนื่องจากภาพถ่ายคิวอาร์โค้ดอาจเบลอหรือมืดเกินไป กรุณาขยับเลนส์กล้องให้ชัดเจน ถือมือนิ่งๆ 1 วินาที หรือเปิดไฟฉายเพิ่มความสว่างแล้วลองถ่ายภาพสแกนใหม่อีกครั้งค่ะ");
-                });
-        });
     </script>
 </body>
 </html>
