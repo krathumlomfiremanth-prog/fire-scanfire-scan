@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>ระบบตรวจสอบถังดับเพลิง เทศบาลเมืองกระทุ่มล้ม</title>
-    <!-- ดึงระบบคำสั่งพัฒนาของ LINE LIFF ตัวเต็มที่ถูกต้อง -->
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <!-- ดึงไฟล์คำสั่งพัฒนาระบบกล้อง LINE LIFF เวอร์ชันเสถียรมาตรฐานสากล -->
+    <script src="https://line-scdn.net"></script>
 </head>
 <body style="background-color: #f4f4f4; font-family: sans-serif; text-align: center; padding-top: 50px;">
     
@@ -15,32 +18,33 @@
     </div>
 
     <script>
-        // เริ่มต้นระบบด้วย LIFF ID ของเทศบาลเมืองกระทุ่มล้ม
+        // เริ่มต้นเปิดระบบ LIFF ID ของเทศบาลเมืองกระทุ่มล้ม
         liff.init({ liffId: "2011967473-uNg8ywfT" }).then(() => {
             if (!liff.isLoggedIn()) {
                 liff.login();
             } else {
-                // บังคับเปิดระบบเลนส์กล้องแท้ของสมาร์ทโฟนขึ้นมาทำงานทันที
-               liff.scanCodeV2().then(result => {
-    if (result.value) {
-        var qrResult = result.value; 
-        
-        // 🚨 บรรทัดพิเศษ: บังคับให้ระบบโชว์ป๊อปอัปบอกบนมือถือเลยว่ากล้องสแกนเจอค่าอะไร
-        alert("กล้องอ่านค่าได้คำว่า: " + qrResult);
-        
-        var googleFormUrl = "https://google.com" + encodeURIComponent(qrResult);
-        
-        window.location.href = googleFormUrl;
-    }
-})
-
+                // บังคับปลุกเลนส์กล้องถ่ายรูปหลักของเครื่องขึ้นมาทำงานทันที
+                liff.scanCodeV2().then(result => {
+                    if (result.value) {
+                        var qrResult = result.value; // ข้อความที่กล้องสแกนได้จาก QR Code ข้างถัง
+                        
+                        // 🚨 จุดแจ้งเตือน: บังคับให้มือถือโชว์ป๊อปอัปบอกทันทีว่ากล้องอ่านค่าได้คำว่าอะไร
+                        alert("กล้องอ่านค่าได้คำว่า: " + qrResult);
+                        
+                        // นำค่ารหัสที่ได้มาเชื่อมพ่วงเข้ากับลิงก์ Google Forms ตัวเต็มของเทศบาลอย่างถูกต้อง
+                        var googleFormUrl = "https://google.com" + encodeURIComponent(qrResult);
+                        
+                        // สั่งเปลี่ยนหน้าจอพาวิ่งเข้า Google Forms ทันที
+                        window.location.href = googleFormUrl;
+                    } else {
+                        alert("ไม่พบข้อมูลภายใน QR Code หรือคุณได้กดปิดหน้าจอกล้องสแกน");
                     }
                 }).catch(err => { 
-                    alert("แอป LINE ปฏิเสธการเข้าถึงกล้อง โค้ดข้อผิดพลาด: " + err); 
+                    alert("แอป LINE หรือระบบเครื่องปฏิเสธการเข้าถึงกล้อง ข้อผิดพลาด: " + err); 
                 });
             }
         }).catch(err => { 
-            alert("ระบบเชื่อมต่อไม่สำเร็จ กรุณาเช็กความถูกต้องของรหัส LIFF ID โค้ดข้อผิดพลาด: " + err); 
+            alert("เชื่อมต่อกับ LINE Developers ไม่สำเร็จ กรุณาเช็กความถูกต้องของรหัส LIFF ID ข้อผิดพลาด: " + err); 
         });
     </script>
 </body>
