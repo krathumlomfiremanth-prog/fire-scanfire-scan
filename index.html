@@ -7,54 +7,74 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>ระบบตรวจสอบถังดับเพลิง เทศบาลเมืองกระทุ่มล้ม</title>
-    <!-- ดึงไฟล์คำสั่งพัฒนาระบบกล้อง LINE LIFF ตัวล่าสุด -->
+    <!-- ดึงไฟล์คำสั่งพัฒนาระบบ LINE LIFF มาใช้งานเพื่อล็อกอินผู้ใช้งาน -->
     <script src="https://line-scdn.net"></script>
     <style>
-        body { background-color: #f4f4f4; font-family: sans-serif; text-align: center; padding-top: 50px; }
-        .container { padding: 30px; background: white; margin: 0 auto; max-width: 85%; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .btn { display: none; margin-top: 20px; padding: 12px 25px; background-color: #28a745; color: white; border: none; border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer; text-decoration: none; }
+        body { background-color: #f4f4f4; font-family: sans-serif; text-align: center; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .container { padding: 30px; background: white; width: 85%; max-width: 400px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); box-sizing: border-radius; }
+        .logo { font-size: 40px; margin-bottom: 10px; }
+        .title { font-size: 20px; color: #d9534f; font-weight: bold; margin: 10px 0; }
+        .desc { font-size: 14px; color: #555; line-height: 1.5; margin-bottom: 25px; }
+        
+        /* ปุ่มสแกนสีแดงเด่นชัด สั่งเปิดเลนส์กล้องมือถือตรงๆ */
+        .scan-btn { display: inline-block; width: 100%; padding: 15px 0; background-color: #e53935; color: white; border: none; border-radius: 30px; font-size: 18px; font-weight: bold; text-decoration: none; box-shadow: 0 4px 8px rgba(229,57,53,0.3); cursor: pointer; transition: 0.2s; }
+        .scan-btn:active { transform: scale(0.98); background-color: #c62828; }
+        
+        /* สั่งซ่อนหน้าจอกล้องสแกนไฟล์ดั้งเดิมของระบบ */
+        #qr-input { display: none; }
     </style>
 </head>
 <body>
     
     <div class="container">
-        <p id="status-text" style="font-size: 18px; color: #333; font-weight: bold; margin-bottom: 10px;">กำลังเรียกเปิดกล้องถ่ายรูป...</p>
-        <p id="sub-text" style="font-size: 14px; color: #666;">กรุณารอสักครู่ ระบบกำลังปลุกกล้องถ่ายรูปเพื่อสแกน QR Code ข้างถังดับเพลิง</p>
+        <div class="logo">🚒</div>
+        <div class="title">เทศบาลเมืองกระทุ่มล้ม</div>
+        <div class="desc">ระบบตรวจสอบสถานะถังดับเพลิงประจำชุมชน<br>กรุณากดปุ่มด้านล่างเพื่อเปิดกล้องมือถือสแกนคิวอาร์โค้ดที่ข้างถังดับเพลิงค่ะ</div>
         
-        <!-- ปุ่มสำรองวิ่งเข้า Google Forms ปลายทางหน้าแรก -->
-        <a id="backup-btn" class="btn" href="https://google.com">คลิกที่นี่ เพื่อเข้าฟอร์มตรวจสอบโดยตรง</a>
+        <!-- ตัวรับคำสั่งเรียกเปิดกล้องถ่ายรูปสแกนรหัสของโทรศัพท์โดยตรง -->
+        <input type="file" id="qr-input" accept="image/*" capture="environment">
+        
+        <!-- ปุ่มกดเปิดกล้องสวยงามสำหรับให้ประชาชนใช้นิ้วคลิก -->
+        <button class="scan-btn" onclick="openCamera()">📷 กดตรงนี้ เพื่อเปิดกล้องสแกน</button>
     </div>
 
+    <!-- ดึงระบบเครื่องมืออ่านรหัสคิวอาร์โค้ดความไวสูงมาช่วยประมวลผลเบื้องหลัง -->
+    <script src="https://unpkg.com"></script>
     <script>
-        // เริ่มต้นเปิดระบบ LIFF ID ของเทศบาลเมืองกระทุ่มล้ม
+        // เริ่มต้นเปิดระบบ LIFF เพื่อตรวจสอบความปลอดภัยของแอป LINE
         liff.init({ liffId: "2011967473-uNg8ywfT" }).then(() => {
             if (!liff.isLoggedIn()) {
                 liff.login();
-            } else {
-                
-                // ตั้งเวลาดักจับ (Timeout) 3 วินาที หากกล้องเปิดไม่สำเร็จ ให้แสดงปุ่มกดทันที
-                setTimeout(function() {
-                    document.getElementById("status-text").innerText = "ระบบกล้องขัดข้อง หรือไม่รองรับมือถือรุ่นนี้";
-                    document.getElementById("sub-text").innerText = "สแกนไม่ติด? ไม่ต้องกังวล คุณสามารถกดปุ่มด้านล่างเพื่อเข้าฟอร์มไปพิมพ์รายงานเลขถังได้ทันทีค่ะ";
-                    document.getElementById("backup-btn").style.display = "inline-block";
-                }, 3000);
-
-                // สั่งเปิดระบบเลนส์กล้องแท้ของสมาร์ทโฟน
-                liff.scanCodeV2().then(result => {
-                    if (result.value) {
-                        var qrResult = result.value; // จะได้ลิงก์ตัวเต็มจาก QR Code เช่น https://google.com
-                        
-                        // 🛠️ ปรับแก้พิเศษ: สั่งให้เบราว์เซอร์วิ่งเข้าสู่ลิงก์ตรงจาก QR Code ชิ้นนั้นทันทีโดยไม่พ่วงโค้ดซ้ำซ้อน
-                        window.location.href = qrResult;
-                    }
-                }).catch(err => {
-                    document.getElementById("status-text").innerText = "แอป LINE ปฏิเสธการเข้าถึงกล้อง";
-                    document.getElementById("backup-btn").style.display = "inline-block";
-                });
             }
-        }).catch(err => { 
-            document.getElementById("status-text").innerText = "เชื่อมต่อระบบไม่สำเร็จ";
-            document.getElementById("backup-btn").style.display = "inline-block";
+        }).catch(err => { console.error("LIFF Error:", err); });
+
+        // ฟังก์ชันสั่งดีดเปิดเลนส์กล้องถ่ายรูปแท้ของมือถือทันทีเมื่อประชาชนกดปุ่ม
+        function openCamera() {
+            document.getElementById('qr-input').click();
+        }
+
+        // เมื่อกล้องถ่ายภาพ QR Code ติดปุ๊บ ระบบประมวลผลอ่านลิงก์ Google Forms แยกถังทันที
+        document.getElementById('qr-input').addEventListener('change', function(e) {
+            if (e.target.files.length === 0) return;
+            
+            var file = e.target.files[0];
+            var html5QrCode = new Html5Qrcode("qr-input");
+            
+            // สั่งแกะลายคิวอาร์โค้ดจากกล้องถ่ายรูป
+            Html5Qrcode.scanImage(file, { experimental: { useBarCodeDetectorIfSupported: true } })
+                .then(qrCodeMessage => {
+                    // เมื่อแกะเจอลิงก์ Google Forms ตัวเต็มแยกถัง (`https://google.com`) ให้พุ่งเข้าเว็บฟอร์มทันที!
+                    if (qrCodeMessage.startsWith("http://") || qrCodeMessage.startsWith("https://")) {
+                        window.location.href = qrCodeMessage;
+                    } else {
+                        // กรณีในคิวอาร์เป็นรหัสข้อความสั้น โค้ดจะช่วยผูกเข้าฟอร์มเทศบาลให้อัตโนมัติ ป้องกันลิงก์หลุด
+                        window.location.href = "https://google.com" + encodeURIComponent(qrCodeMessage);
+                    }
+                })
+                .catch(err => {
+                    // หากรูปภาพเบลอหรือมุมกล้องเบี้ยว ให้ประชาชนกดสแกนซ้ำได้สะดวก
+                    alert("สแกนไม่สำเร็จ: กรุณาขยับกล้องให้ตรงและถ่ายภาพ QR Code ข้างถังดับเพลิงใหม่อีกครั้งค่ะ");
+                });
         });
     </script>
 </body>
