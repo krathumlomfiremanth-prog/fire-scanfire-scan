@@ -10,17 +10,15 @@
     <p style="text-align: center; font-size: 18px; margin-top: 50px;">กำลังเปิดกล้องถ่ายรูปเพื่อสแกนถังดับเพลิง...</p>
 
     <script>
-        // โค้ดข้อ 3 ที่ใช้เปิดกล้องระบบมือถือ
-        // ทำการกรอกรหัส LIFF ID ของคุณลงในเครื่องหมายคำพูดด้านล่างนี้
-        liff.init({ liffId: "เอาเลข_LIFF_ID_ของคุณมาวางตรงนี้" }).then(() => {
+        // บังคับปลุกระบบกล้องหลักของโทรศัพท์ขึ้นมาทำงานทันที
+        liff.init({ liffId: "2011967473-uNg8ywfT" }).then(() => {
             if (liff.isLoggedIn()) {
                 liff.scanCodeV2().then(result => {
                     if (result.value) {
-                        const qrResult = result.value; 
+                        const qrResult = result.value; // รหัสถังดับเพลิงที่สแกนได้จากข้างถัง
                         
-                        // ระบบจะนำค่าที่สแกนได้ ส่งเข้าไปกรอกใน Google Form ของเทศบาลอัตโนมัติ
-                        // อย่าลืมแก้ไขลิงก์และเลข entry.xxxx ให้เป็นฟิลด์ของคุณใน Google Form
-                        const googleFormUrl = `https://google.com{encodeURIComponent(qrResult)}`;
+                        // ⚠️ ลบลิงก์ตัวอย่างด้านล่างออก แล้วเอาลิงก์ Google Forms ตัวเต็มของเทศบาลมาวางใส่แทนครับ
+                        const googleFormUrl = "https://docs.google.com/forms/d/1JzZ334bqOCxjDs_npDMyK2RIXqpFBmGZRFA147MHTQU/edit";
                         
                         window.location.href = googleFormUrl;
                     }
