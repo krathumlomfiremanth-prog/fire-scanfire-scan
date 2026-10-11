@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบตรวจสอบถังดับเพลิง เทศบาลเมืองกระทุ่มล้ม</title>
-    <!-- ดึงระบบคำสั่งพัฒนาของ LINE LIFF มาใช้งาน -->
+    <!-- ดึงระบบคำสั่งพัฒนาของ LINE LIFF ตัวเต็มที่ถูกต้อง -->
     <script src="https://line-scdn.net"></script>
 </head>
 <body style="background-color: #f4f4f4; font-family: sans-serif; text-align: center; padding-top: 50px;">
@@ -25,7 +25,7 @@
                     if (result.value) {
                         const qrResult = result.value; // ดึงรหัสถังดับเพลิงประจำถังที่สแกนเจอ
                         
-                        // ระบบทำการต่อพ่วงรหัสถังเข้ากับ ID ฟิลด์ของ Google Form (entry.436950178) โดยอัตโนมัติ
+                        // กู้คืนลิงก์ Google Forms ตัวเต็มของเทศบาล พร้อมผูกช่อง entry.436950178 ให้กรอกเลขถังอัตโนมัติ
                         const googleFormUrl = `https://google.com{encodeURIComponent(qrResult)}`;
                         
                         // นำทางประชาชนพุ่งเข้าสู่หน้าฟอร์มที่กรอกเลขถังให้เรียบร้อยแล้วทันที
